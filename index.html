@@ -11,6 +11,7 @@
         th, td { border: 1px solid black; padding: 10px; text-align: center; }
         .available { background-color: #c8e6c9; cursor: pointer; }
         .booked { background-color: #ffccbc; }
+        .available:hover { background-color: #a5d6a7; }
     </style>
 </head>
 <body>
@@ -33,12 +34,13 @@
             authDomain: "introtoui.firebaseapp.com",
             databaseURL: "https://introtoui-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "introtoui",
-            storageBucket: "introtoui.firebasestorage.app",
+            storageBucket: "introtoui.appspot.com",
             messagingSenderId: "278939770423",
             appId: "1:278939770423:web:c370d7fea264f208f969b2"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         const slots = [
@@ -52,35 +54,51 @@
         function loadSchedule() {
             scheduleTable.innerHTML = "";
             slots.forEach((slot, index) => {
-                database.ref(`slots/${index}`).once("value", (snapshot) => {
+                database.ref(`slots/${index}`).once("value").then((snapshot) => {
                     const data = snapshot.val();
                     const booked = data ? data.booked : false;
                     const name = data ? data.name : "";
-                    const row = `<tr>
+                    
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
                         <td>${slot.date}</td>
                         <td>${slot.time}</td>
-                        <td class="${booked ? 'booked' : 'available'}" onclick="bookSlot(${index})">
+                        <td class="${booked ? 'booked' : 'available'}" 
+                            onclick="${!booked ? `bookSlot(${index})` : 'return false;'}">
                             ${booked ? `Booked by ${name}` : 'Available'}
                         </td>
-                    </tr>`;
-                    scheduleTable.innerHTML += row;
+                    `;
+                    scheduleTable.appendChild(row);
+                }).catch((error) => {
+                    console.error("Error loading data:", error);
                 });
             });
         }
 
         function bookSlot(index) {
-            database.ref(`slots/${index}`).once("value", (snapshot) => {
-                if (!snapshot.val()) {
-                    const userName = prompt("Enter your name to book this slot:");
-                    if (userName) {
-                        database.ref(`slots/${index}`).set({ booked: true, name: userName });
-                        loadSchedule();
-                    }
-                }
-            });
+            const userName = prompt("Enter your name to book this slot:");
+            if (userName && userName.trim() !== "") {
+                database.ref(`slots/${index}`).set({ 
+                    booked: true, 
+                    name: userName.trim() 
+                }).then(() => {
+                    loadSchedule();
+                }).catch((error) => {
+                    alert("Error booking slot. Please try again.");
+                    console.error("Error booking slot:", error);
+                });
+            } else if (userName !== null) {
+                alert("Please enter a valid name.");
+            }
         }
 
-        loadSchedule();
+        // Load schedule when page loads
+        document.addEventListener("DOMContentLoaded", loadSchedule);
+        
+        // Also set up a listener for real-time updates
+        database.ref('slots').on('value', () => {
+            loadSchedule();
+        });
     </script>
 </body>
 </html>
