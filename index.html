@@ -3,16 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduling Platform</title>
-    <!-- Firebase 8.10.1 (stable version) -->
+    <title>Intro to UI Scheduling Platform</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 10px; text-align: center; }
-        .available { background-color: #c8e6c9; cursor: pointer; }
-        .booked { background-color: #ffccbc; }
-        .available:hover { background-color: #a5d6a7; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px; /* Added bottom padding */
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px; /* Added space below table */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .available {
+            background-color: #c8e6c9;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .available:hover {
+            background-color: #a5d6a7;
+        }
+        .booked {
+            background-color: #ffccbc;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -28,7 +64,79 @@
         <tbody id="schedule"></tbody>
     </table>
 
+    <div class="footer">
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduling Platform</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px; /* Added bottom padding */
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px; /* Added space below table */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .available {
+            background-color: #c8e6c9;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .available:hover {
+            background-color: #a5d6a7;
+        }
+        .booked {
+            background-color: #ffccbc;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h2>Timetable Slots</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="schedule"></tbody>
+    </table>
+
+    <div class="footer">
+        Intro To UI © 2025
+    </div>
+
     <script>
+        // [Previous JavaScript code remains exactly the same]
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDRm3KFbadCnwyHf5bMdPTjG4lJtw_hiYI",
@@ -42,89 +150,23 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        console.log("Firebase initialized!");
         const database = firebase.database();
 
+        // Pre-sorted slots (already in correct order)
         const slots = [
-            
-              { date: "2nd April", time: "9:00 - 9:10 AM" },
-    { date: "2nd April", time: "9:10 - 9:20 AM" },
-    { date: "2nd April", time: "9:20 - 9:30 AM" },
-    { date: "2nd April", time: "9:30 - 9:40 AM" },
-    { date: "2nd April", time: "9:40 - 9:50 AM" },
-    { date: "2nd April", time: "9:50 - 10:00 AM" },
-    { date: "2nd April", time: "10:00 - 10:10 AM" },
-    { date: "2nd April", time: "10:10 - 10:20 AM" },
-    { date: "2nd April", time: "10:20 - 10:30 AM" },
-    { date: "2nd April", time: "10:30 - 10:40 AM" },
-    { date: "2nd April", time: "10:40 - 10:50 AM" },
-    { date: "2nd April", time: "10:50 - 11:00 AM" },
-    
-                { date: "2nd April", time: "12:00 - 12:10 PM" },
-                { date: "2nd April", time: "12:10 - 12:20 PM" },
-                { date: "2nd April", time: "12:20 - 12:30 PM" },
-                { date: "2nd April", time: "12:30 - 12:40 PM" },
-                { date: "2nd April", time: "12:40 - 12:50 PM" },
-                { date: "2nd April", time: "12:50 - 1:00 PM" },
-                { date: "2nd April", time: "1:00 - 1:10 PM" },
-                { date: "2nd April", time: "1:10 - 1:20 PM" },
-                { date: "2nd April", time: "1:20 - 1:30 PM" },
-                { date: "2nd April", time: "1:30 - 1:40 PM" },
-                { date: "2nd April", time: "1:40 - 1:50 PM" },
-                { date: "2nd April", time: "1:50 - 2:00 PM" },
-                { date: "2nd April", time: "2:00 - 2:10 PM" },
-                { date: "2nd April", time: "2:10 - 2:20 PM" },
-                { date: "2nd April", time: "2:20 - 2:30 PM" },
-                { date: "2nd April", time: "2:30 - 2:40 PM" },
-                { date: "2nd April", time: "2:40 - 2:50 PM" },
-                { date: "2nd April", time: "2:50 - 3:00 PM" }
-            ].sort((a, b) => {
-                // Improved sorting that handles AM/PM correctly
-                const timeToNumber = timeStr => {
-                    const [timePart, period] = timeStr.split(' ').slice(0, 2);
-                    const [hours, minutes] = timePart.split(':').map(Number);
-                    return (hours % 12 + (period === 'PM' ? 12 : 0)) * 60 + minutes;
-                };
-                return timeToNumber(a.time) - timeToNumber(b.time);
-            });
+            { date: "2nd April", time: "9:00 - 9:10 AM" },
+            { date: "2nd April", time: "9:10 - 9:20 AM" },
+            // ... [rest of your slot definitions]
+        ];
 
-        
-        // Initialize slot data if empty
+        // [Rest of your JavaScript functions remain the same]
         function initializeSlotData() {
             database.ref('slot').once('value').then((snapshot) => {
                 if (!snapshot.exists()) {
-                    const defaultData = {
-                        "0": { booked: false, name: "" },
-                        "1": { booked: false, name: "" },
-                        "2": { booked: false, name: "" },
-                        "3": { booked: false, name: "" },
-                        "4": { booked: false, name: "" },
-                        "5": { booked: false, name: "" },
-                        "6": { booked: false, name: "" },
-                        "7": { booked: false, name: "" },
-                        "8": { booked: false, name: "" },
-                        "9": { booked: false, name: "" },
-                        "10": { booked: false, name: "" },
-                        "11": { booked: false, name: "" },
-                        "12": { booked: false, name: "" },
-                        "13": { booked: false, name: "" },
-                        "14": { booked: false, name: "" },
-                        "15": { booked: false, name: "" },
-                        "16": { booked: false, name: "" },
-                        "17": { booked: false, name: "" },
-                        "18": { booked: false, name: "" },
-                        "19": { booked: false, name: "" },
-                        "20": { booked: false, name: "" },
-                        "21": { booked: false, name: "" },
-                        "22": { booked: false, name: "" },
-                        "23": { booked: false, name: "" },
-                        "24": { booked: false, name: "" },
-                        "25": { booked: false, name: "" },
-                        "26": { booked: false, name: "" },
-                        "27": { booked: false, name: "" },
-                        "28": { booked: false, name: "" },
-                        "29": { booked: false, name: "" }
-                    };
+                    const defaultData = {};
+                    slots.forEach((_, index) => {
+                        defaultData[index] = { booked: false, name: "" };
+                    });
                     database.ref('slot').set(defaultData)
                         .then(() => console.log("Default slot data created"))
                         .catch(console.error);
@@ -132,36 +174,34 @@
             });
         }
 
-        // Load and display schedule
         function loadSchedule() {
             const scheduleTable = document.getElementById("schedule");
-            scheduleTable.innerHTML = "";
             
+            // First create all table rows in correct order
+            slots.forEach((slot, index) => {
+                const row = document.createElement('tr');
+                row.id = `slot-row-${index}`;
+                row.innerHTML = `
+                    <td>${slot.date}</td>
+                    <td>${slot.time}</td>
+                    <td id="slot-status-${index}">Loading...</td>
+                `;
+                scheduleTable.appendChild(row);
+            });
+            
+            // Then populate data as it arrives from Firebase
             slots.forEach((slot, index) => {
                 database.ref(`slot/${index}`).on('value', (snapshot) => {
                     const data = snapshot.val() || { booked: false, name: "" };
-                    const rowId = `slot-row-${index}`;
+                    const statusCell = document.getElementById(`slot-status-${index}`);
                     
-                    let row = document.getElementById(rowId);
-                    if (!row) {
-                        row = document.createElement('tr');
-                        row.id = rowId;
-                        scheduleTable.appendChild(row);
-                    }
-                    
-                    row.innerHTML = `
-                        <td>${slot.date}</td>
-                        <td>${slot.time}</td>
-                        <td class="${data.booked ? 'booked' : 'available'}" 
-                            onclick="${!data.booked ? `bookSlot(${index})` : 'return false;'}">
-                            ${data.booked ? `Booked by ${data.name}` : 'Available'}
-                        </td>
-                    `;
+                    statusCell.className = data.booked ? 'booked' : 'available';
+                    statusCell.textContent = data.booked ? `Booked by ${data.name}` : 'Available';
+                    statusCell.onclick = data.booked ? null : () => bookSlot(index);
                 });
             });
         }
 
-        // Book a slot
         function bookSlot(index) {
             const userName = prompt("Enter your name to book this slot:");
             if (userName && userName.trim() !== "") {
@@ -176,11 +216,118 @@
         window.addEventListener('DOMContentLoaded', () => {
             initializeSlotData();
             loadSchedule();
-            
-            // Test database connection
-            database.ref('.info/connected').on('value', (snap) => {
-                console.log("Database connected:", snap.val());
+        });
+    </script>
+</body>
+</html>
+    </div>
+
+    <script>
+        // [Previous JavaScript code remains exactly the same]
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRm3KFbadCnwyHf5bMdPTjG4lJtw_hiYI",
+            authDomain: "introtoui.firebaseapp.com",
+            databaseURL: "https://introtoui-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "introtoui",
+            storageBucket: "introtoui.appspot.com",
+            messagingSenderId: "278939770423",
+            appId: "1:278939770423:web:c370d7fea264f208f969b2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const slots = [
+            { date: "2nd April", time: "9:00 - 9:10 AM" },
+            { date: "2nd April", time: "9:10 - 9:20 AM" },
+            { date: "2nd April", time: "9:20 - 9:30 AM" },
+            { date: "2nd April", time: "9:30 - 9:40 AM" },
+            { date: "2nd April", time: "9:40 - 9:50 AM" },
+            { date: "2nd April", time: "9:50 - 10:00 AM" },
+            { date: "2nd April", time: "10:00 - 10:10 AM" },
+            { date: "2nd April", time: "10:10 - 10:20 AM" },
+            { date: "2nd April", time: "10:20 - 10:30 AM" },
+            { date: "2nd April", time: "10:30 - 10:40 AM" },
+            { date: "2nd April", time: "10:40 - 10:50 AM" },
+            { date: "2nd April", time: "10:50 - 11:00 AM" },
+            { date: "2nd April", time: "12:00 - 12:10 PM" },
+            { date: "2nd April", time: "12:10 - 12:20 PM" },
+            { date: "2nd April", time: "12:20 - 12:30 PM" },
+            { date: "2nd April", time: "12:30 - 12:40 PM" },
+            { date: "2nd April", time: "12:40 - 12:50 PM" },
+            { date: "2nd April", time: "12:50 - 1:00 PM" },
+            { date: "2nd April", time: "1:00 - 1:10 PM" },
+            { date: "2nd April", time: "1:10 - 1:20 PM" },
+            { date: "2nd April", time: "1:20 - 1:30 PM" },
+            { date: "2nd April", time: "1:30 - 1:40 PM" },
+            { date: "2nd April", time: "1:40 - 1:50 PM" },
+            { date: "2nd April", time: "1:50 - 2:00 PM" },
+            { date: "2nd April", time: "2:00 - 2:10 PM" },
+            { date: "2nd April", time: "2:10 - 2:20 PM" },
+            { date: "2nd April", time: "2:20 - 2:30 PM" },
+            { date: "2nd April", time: "2:30 - 2:40 PM" },
+            { date: "2nd April", time: "2:40 - 2:50 PM" },
+            { date: "2nd April", time: "2:50 - 3:00 PM" }
+        ];
+
+        function initializeSlotData() {
+            database.ref('slot').once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    const defaultData = {};
+                    slots.forEach((_, index) => {
+                        defaultData[index] = { booked: false, name: "" };
+                    });
+                    database.ref('slot').set(defaultData)
+                        .then(() => console.log("Default slot data created"))
+                        .catch(console.error);
+                }
             });
+        }
+
+        function loadSchedule() {
+            const scheduleTable = document.getElementById("schedule");
+            
+            // First create all table rows in correct order
+            slots.forEach((slot, index) => {
+                const row = document.createElement('tr');
+                row.id = `slot-row-${index}`;
+                row.innerHTML = `
+                    <td>${slot.date}</td>
+                    <td>${slot.time}</td>
+                    <td id="slot-status-${index}">Loading...</td>
+                `;
+                scheduleTable.appendChild(row);
+            });
+            
+            // Then populate data as it arrives from Firebase
+            slots.forEach((slot, index) => {
+                database.ref(`slot/${index}`).on('value', (snapshot) => {
+                    const data = snapshot.val() || { booked: false, name: "" };
+                    const statusCell = document.getElementById(`slot-status-${index}`);
+                    
+                    statusCell.className = data.booked ? 'booked' : 'available';
+                    statusCell.textContent = data.booked ? `Booked by ${data.name}` : 'Available';
+                    statusCell.onclick = data.booked ? null : () => bookSlot(index);
+                });
+            });
+        }
+
+        function bookSlot(index) {
+            const userName = prompt("Enter your name to book this slot:");
+            if (userName && userName.trim() !== "") {
+                database.ref(`slot/${index}`).set({
+                    booked: true,
+                    name: userName.trim()
+                }).catch(console.error);
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeSlotData();
+            loadSchedule();
         });
     </script>
 </body>
