@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scheduling Platform</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <!-- Firebase 8.10.1 (stable version) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid black; padding: 10px; text-align: center; }
@@ -15,7 +16,7 @@
     </style>
 </head>
 <body>
-    <h2>Timetable slot</h2>
+    <h2>Timetable Slots</h2>
     <table>
         <thead>
             <tr>
@@ -40,64 +41,81 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
+        console.log("Firebase initialized!");
         const database = firebase.database();
 
-        const slot = [
+        const slots = [
             { date: "2nd April", time: "9:00 - 9:15 AM" },
             { date: "2nd April", time: "9:15 - 9:30 AM" },
             { date: "2nd April", time: "9:30 - 9:45 AM" }
         ];
 
-        const scheduleTable = document.getElementById("schedule");
+        // Initialize slot data if empty
+        function initializeSlotData() {
+            database.ref('slot').once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    const defaultData = {
+                        "0": { booked: false, name: "" },
+                        "1": { booked: false, name: "" },
+                        "2": { booked: false, name: "" }
+                    };
+                    database.ref('slot').set(defaultData)
+                        .then(() => console.log("Default slot data created"))
+                        .catch(console.error);
+                }
+            });
+        }
 
+        // Load and display schedule
         function loadSchedule() {
+            const scheduleTable = document.getElementById("schedule");
             scheduleTable.innerHTML = "";
-            slot.forEach((slot, index) => {
-                database.ref(`slot/${index}`).once("value").then((snapshot) => {
-                    const data = snapshot.val();
-                    const booked = data ? data.booked : false;
-                    const name = data ? data.name : "";
+            
+            slots.forEach((slot, index) => {
+                database.ref(`slot/${index}`).on('value', (snapshot) => {
+                    const data = snapshot.val() || { booked: false, name: "" };
+                    const rowId = `slot-row-${index}`;
                     
-                    const row = document.createElement("tr");
+                    let row = document.getElementById(rowId);
+                    if (!row) {
+                        row = document.createElement('tr');
+                        row.id = rowId;
+                        scheduleTable.appendChild(row);
+                    }
+                    
                     row.innerHTML = `
                         <td>${slot.date}</td>
                         <td>${slot.time}</td>
-                        <td class="${booked ? 'booked' : 'available'}" 
-                            onclick="${!booked ? `bookSlot(${index})` : 'return false;'}">
-                            ${booked ? `Booked by ${name}` : 'Available'}
+                        <td class="${data.booked ? 'booked' : 'available'}" 
+                            onclick="${!data.booked ? `bookSlot(${index})` : 'return false;'}">
+                            ${data.booked ? `Booked by ${data.name}` : 'Available'}
                         </td>
                     `;
-                    scheduleTable.appendChild(row);
-                }).catch((error) => {
-                    console.error("Error loading data:", error);
                 });
             });
         }
 
+        // Book a slot
         function bookSlot(index) {
             const userName = prompt("Enter your name to book this slot:");
             if (userName && userName.trim() !== "") {
-                database.ref(`slot/${index}`).set({ 
-                    booked: true, 
-                    name: userName.trim() 
-                }).then(() => {
-                    loadSchedule();
-                }).catch((error) => {
-                    alert("Error booking slot. Please try again.");
-                    console.error("Error booking slot:", error);
-                });
-            } else if (userName !== null) {
-                alert("Please enter a valid name.");
+                database.ref(`slot/${index}`).set({
+                    booked: true,
+                    name: userName.trim()
+                }).catch(console.error);
             }
         }
 
-        // Load schedule when page loads
-        document.addEventListener("DOMContentLoaded", loadSchedule);
-        
-        // Also set up a listener for real-time updates
-        database.ref('slot').on('value', () => {
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeSlotData();
             loadSchedule();
+            
+            // Test database connection
+            database.ref('.info/connected').on('value', (snap) => {
+                console.log("Database connected:", snap.val());
+            });
         });
     </script>
 </body>
