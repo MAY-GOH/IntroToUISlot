@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduling Platform</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        .available { background-color: #c8e6c9; cursor: pointer; }
+        .booked { background-color: #ffccbc; }
+    </style>
+</head>
+<body>
+    <h2>Timetable Slots</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="schedule"></tbody>
+    </table>
+
+    <script>
+        const slots = [
+            { date: "2nd April", time: "9:00 - 9:15 AM" },
+            { date: "2nd April", time: "9:15 - 9:30 AM" },
+            { date: "2nd April", time: "9:30 - 9:45 AM" },
+            { date: "2nd April", time: "9:45 - 10:00 AM" }
+        ];
+
+        const scheduleTable = document.getElementById("schedule");
+
+        function loadSchedule() {
+            scheduleTable.innerHTML = "";
+            slots.forEach((slot, index) => {
+                const booked = localStorage.getItem(`slot_${index}`);
+                const row = `<tr>
+                    <td>${slot.date}</td>
+                    <td>${slot.time}</td>
+                    <td class="${booked ? 'booked' : 'available'}" onclick="bookSlot(${index})">
+                        ${booked ? 'Booked' : 'Available'}
+                    </td>
+                </tr>`;
+                scheduleTable.innerHTML += row;
+            });
+        }
+
+        function bookSlot(index) {
+            if (!localStorage.getItem(`slot_${index}`)) {
+                localStorage.setItem(`slot_${index}`, "booked");
+                loadSchedule();
+            }
+        }
+
+        loadSchedule();
+    </script>
+</body>
+</html>
