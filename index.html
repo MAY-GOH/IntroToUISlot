@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scheduling Platform</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
     <style>
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid black; padding: 10px; text-align: center; }
@@ -25,11 +27,24 @@
     </table>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRm3KFbadCnwyHf5bMdPTjG4lJtw_hiYI",
+            authDomain: "introtoui.firebaseapp.com",
+            databaseURL: "https://introtoui-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "introtoui",
+            storageBucket: "introtoui.firebasestorage.app",
+            messagingSenderId: "278939770423",
+            appId: "1:278939770423:web:c370d7fea264f208f969b2"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const slots = [
             { date: "2nd April", time: "9:00 - 9:15 AM" },
             { date: "2nd April", time: "9:15 - 9:30 AM" },
-            { date: "2nd April", time: "9:30 - 9:45 AM" },
-            { date: "2nd April", time: "9:45 - 10:00 AM" }
+            { date: "2nd April", time: "9:30 - 9:45 AM" }
         ];
 
         const scheduleTable = document.getElementById("schedule");
@@ -37,23 +52,32 @@
         function loadSchedule() {
             scheduleTable.innerHTML = "";
             slots.forEach((slot, index) => {
-                const booked = localStorage.getItem(`slot_${index}`);
-                const row = `<tr>
-                    <td>${slot.date}</td>
-                    <td>${slot.time}</td>
-                    <td class="${booked ? 'booked' : 'available'}" onclick="bookSlot(${index})">
-                        ${booked ? 'Booked' : 'Available'}
-                    </td>
-                </tr>`;
-                scheduleTable.innerHTML += row;
+                database.ref(`slots/${index}`).once("value", (snapshot) => {
+                    const data = snapshot.val();
+                    const booked = data ? data.booked : false;
+                    const name = data ? data.name : "";
+                    const row = `<tr>
+                        <td>${slot.date}</td>
+                        <td>${slot.time}</td>
+                        <td class="${booked ? 'booked' : 'available'}" onclick="bookSlot(${index})">
+                            ${booked ? `Booked by ${name}` : 'Available'}
+                        </td>
+                    </tr>`;
+                    scheduleTable.innerHTML += row;
+                });
             });
         }
 
         function bookSlot(index) {
-            if (!localStorage.getItem(`slot_${index}`)) {
-                localStorage.setItem(`slot_${index}`, "booked");
-                loadSchedule();
-            }
+            database.ref(`slots/${index}`).once("value", (snapshot) => {
+                if (!snapshot.val()) {
+                    const userName = prompt("Enter your name to book this slot:");
+                    if (userName) {
+                        database.ref(`slots/${index}`).set({ booked: true, name: userName });
+                        loadSchedule();
+                    }
+                }
+            });
         }
 
         loadSchedule();
