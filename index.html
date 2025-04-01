@@ -46,14 +46,20 @@
         const database = firebase.database();
 
         const slots = [
-            { date: "2nd April", time: "9:30 - 9:45 AM" },
-            { date: "2nd April", time: "9:45 - 10:00 AM"},
-            { date: "2nd April", time: "10:00 - 10:15 AM" },
-            { date: "2nd April", time: "10:15 - 10:30 AM" },
-            { date: "2nd April", time: "10:30 - 10:45 AM" },
-            { date: "2nd April", time: "10:15 - 10:30 AM" },
-            { date: "2nd April", time: "10:30 - 10:45 AM" },
-            { date: "2nd April", time: "10:45 - 11:00 AM" }
+            
+              { "date": "2nd April", "time": "9:00 - 9:10 AM" },
+              { "date": "2nd April", "time": "9:10 - 9:20 AM" },
+              { "date": "2nd April", "time": "9:20 - 9:30 AM" },
+              { "date": "2nd April", "time": "9:30 - 9:40 AM" },
+              { "date": "2nd April", "time": "9:40 - 9:50 AM" },
+              { "date": "2nd April", "time": "9:50 - 10:00 AM" },
+              { "date": "2nd April", "time": "10:00 - 10:10 AM" },
+              { "date": "2nd April", "time": "10:10 - 10:20 AM" },
+              { "date": "2nd April", "time": "10:20 - 10:30 AM" },
+              { "date": "2nd April", "time": "10:30 - 10:40 AM" },
+              { "date": "2nd April", "time": "10:40 - 10:50 AM" },
+              { "date": "2nd April", "time": "10:50 - 11:00 AM" }
+            
         ];
 
         // Initialize slot data if empty
@@ -68,7 +74,11 @@
                         "4": { booked: false, name: "" },
                         "5": { booked: false, name: "" },
                         "6": { booked: false, name: "" },
-                        "7": { booked: false, name: "" }
+                        "7": { booked: false, name: "" },
+                        "8": { booked: false, name: "" },
+                        "9": { booked: false, name: "" },
+                        "10": { booked: false, name: "" },
+                        "11": { booked: false, name: "" }
                     };
                     database.ref('slot').set(defaultData)
                         .then(() => console.log("Default slot data created"))
