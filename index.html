@@ -59,8 +59,7 @@
               { "date": "2nd April", "time": "10:30 - 10:40 AM" },
               { "date": "2nd April", "time": "10:40 - 10:50 AM" },
               { "date": "2nd April", "time": "10:50 - 11:00 AM" }
-            
-        ];
+        ].sort((a, b) => a.time.localeCompare(b.time)); 
 
         // Initialize slot data if empty
         function initializeSlotData() {
