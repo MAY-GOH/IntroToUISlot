@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h2>Timetable Slots</h2>
+    <h2>Timetable slot</h2>
     <table>
         <thead>
             <tr>
@@ -43,7 +43,7 @@
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        const slots = [
+        const slot = [
             { date: "2nd April", time: "9:00 - 9:15 AM" },
             { date: "2nd April", time: "9:15 - 9:30 AM" },
             { date: "2nd April", time: "9:30 - 9:45 AM" }
@@ -53,8 +53,8 @@
 
         function loadSchedule() {
             scheduleTable.innerHTML = "";
-            slots.forEach((slot, index) => {
-                database.ref(`slots/${index}`).once("value").then((snapshot) => {
+            slot.forEach((slot, index) => {
+                database.ref(`slot/${index}`).once("value").then((snapshot) => {
                     const data = snapshot.val();
                     const booked = data ? data.booked : false;
                     const name = data ? data.name : "";
@@ -78,7 +78,7 @@
         function bookSlot(index) {
             const userName = prompt("Enter your name to book this slot:");
             if (userName && userName.trim() !== "") {
-                database.ref(`slots/${index}`).set({ 
+                database.ref(`slot/${index}`).set({ 
                     booked: true, 
                     name: userName.trim() 
                 }).then(() => {
@@ -96,7 +96,7 @@
         document.addEventListener("DOMContentLoaded", loadSchedule);
         
         // Also set up a listener for real-time updates
-        database.ref('slots').on('value', () => {
+        database.ref('slot').on('value', () => {
             loadSchedule();
         });
     </script>
